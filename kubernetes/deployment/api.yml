@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    role: api
+  name: api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      role: api
+  template:
+    metadata:
+      labels:
+        role: api
+    spec:
+      containers:
+      - image: api-example
+        name: api
+        ports:
+        - containerPort: 3000
+        securityContext:
+          privileged: true
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+          #- name: gluster-persistent-storage
+            #mountPath: /data
+          - name: api-config
+            mountPath: /api/server/config.json
+            subPath: api.config
+          - name: api-datasource
+            mountPath: /api/server/datasources.json
+            subPath: api.datasource
+      securityContext:
+        supplementalGroups: [0]
+      volumes:
+        #- name: gluster-persistent-storage
+          #persistentVolumeClaim:
+            #claimName: glusterfs
+        - name: api-config
+          configMap:
+            name: api-config
+        - name: api-datasource
+          configMap:
+            name: api-datasource

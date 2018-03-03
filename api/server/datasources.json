@@ -1,0 +1,23 @@
+{
+  "db": {
+    "name": "db",
+    "connector": "memory"
+  },
+  "mongodb": {
+    "name": "mongodb",
+    "host": "localhost",
+    "port": 27017,
+    "database": "demo",
+    "user": "user",
+    "password": "password",
+    "connector": "mongodb"
+  },
+  "textStorage": {
+    "name": "textStorage",
+    "connector": "loopback-component-storage",
+    "provider": "filesystem",
+    "root": "/data/",
+    "nameConflict": "makeUnique"
+  }
+}
+

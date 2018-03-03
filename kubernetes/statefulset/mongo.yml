@@ -1,0 +1,87 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-service
+  labels:
+    name: mongo
+spec:
+  ports:
+  - port: 27017
+    targetPort: 27017
+  clusterIP: None
+  selector:
+    role: mongo
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongod
+spec:
+  selector:
+    matchLabels:
+      role: mongo
+  serviceName: mongodb-service
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        role: mongo
+        replicatset: rs0
+    spec:
+      containers:
+        - name: mongod-container
+          image: mongo
+          command:
+            - mongod
+            - "--bind_ip"
+            - "0.0.0.0"
+            - "--replSet"
+            - rs0
+            - "--auth"
+            - "--clusterAuthMode"
+            - "keyFile"
+            - "--keyFile"
+            - "/etc/secrets-volume/mongo-secret.key"
+            - "--setParameter"
+            - "authenticationMechanisms=SCRAM-SHA-1"
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - name: secrets-volume
+              readOnly: true
+              mountPath: /etc/secrets-volume
+            - name: mongo-persistent-storage
+              mountPath: /data/db
+            - name: init-script
+              mountPath: /data/init.sh
+              subPath: init.sh
+          env:
+          - name: MONGO_USER
+            valueFrom:
+              secretKeyRef:
+                name: mongo
+                key: mongo-user
+          - name: MONGO_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mongo
+                key: mongo-password
+          - name: MONGO_DATABASE
+            value: "demo"
+      volumes:
+        - name: secrets-volume
+          secret:
+            secretName: mongo-secret.key
+            defaultMode: 256
+        - name: init-script
+          configMap:
+            name: mongo-init-script
+  volumeClaimTemplates:
+  - metadata:
+      name: mongo-persistent-storage
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi

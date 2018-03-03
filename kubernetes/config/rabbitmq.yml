@@ -1,0 +1,9 @@
+apiVersion: v1
+data:
+  rabbitmq.conf: |
+       default_vhost       = "/"
+       #default_user        = "test"
+       #default_pass        = "test"
+kind: ConfigMap
+metadata:
+  name: rabbitmq

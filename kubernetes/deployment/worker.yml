@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    role: worker
+  name: worker
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      role: worker
+  template:
+    metadata:
+      labels:
+        role: worker
+    spec:
+      containers:
+      - image: worker-example
+        name: worker
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          privileged: true
+        volumeMounts:
+          #- name: gluster-persistent-storage
+            #mountPath: /data
+          - name: config
+            mountPath: /worker/config.json
+            subPath: worker.config
+      securityContext:
+        supplementalGroups: [0]
+      volumes:
+        #- name: gluster-persistent-storage
+          #glusterfs:
+            #endpoints: glusterfs
+            #path: /gv1
+          #persistentVolumeClaim:
+            #claimName: glusterfs
+        - name: config
+          configMap:
+            name: worker

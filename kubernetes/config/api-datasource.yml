@@ -1,0 +1,24 @@
+apiVersion: v1
+data:
+  api.datasource: |
+    {
+        "db": {
+            "name": "db",
+            "connector": "memory"
+        },
+        "mongodb": {
+            "name": "mongodb",
+            "connector": "mongodb",
+            "url": "mongodb://user-mongo:random-password-mongo@mongod-0.mongodb-service.default.svc.cluster.local:27017,mongod-1.mongodb-service.default.svc.cluster.local:27017,mongod-2.mongodb-service.default.svc.cluster.local:27017/demo?replicaSet=rs0"
+        },
+        "textStorage": {
+            "name": "textStorage",
+            "connector": "loopback-component-storage",
+            "provider": "filesystem",
+            "root": "/data/",
+            "nameConflict": "makeUnique"
+        }
+    }
+kind: ConfigMap
+metadata:
+  name: api-datasource

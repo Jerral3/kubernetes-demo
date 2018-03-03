@@ -1,0 +1,7 @@
+{
+	"host": "localhost",
+	"port": 5672,
+	"user": "test",
+	"password": "test",
+	"queue": "textQueue"
+}
