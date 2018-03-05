@@ -3,7 +3,6 @@ const root      = require('../../server/datasources.json').textStorage.root;
 
 module.exports = function(Text) {
     Text.search = function(word, callback) {
-    	word = "set";
     	Text.find({}, function(error, texts) {
     		if (error)
     			return callback(error);
